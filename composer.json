@@ -1,0 +1,49 @@
+{
+    "name": "stickee/laravel-2fa",
+    "type": "library",
+    "description": "Stickee Laravel 2FA - add two factor authentication",
+    "version": "1.0.0",
+    "keywords": [
+        "2fa",
+        "laravel"
+    ],
+    "homepage": "https://www.stickee.co.uk",
+    "readme": "README.md",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Stickee\\Laravel2fa\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Stickee\\Laravel2da\\Test\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Stickee\\Laravel2fa\\ServiceProvider"
+            ]
+        }
+    },
+    "require": {
+        "php": "^7.2.0",
+        "bacon/bacon-qr-code": "^2.0",
+        "illuminate/container": "^5.8|^6.0|^7.0",
+        "illuminate/contracts": "^5.8|^6.0|^7.0",
+        "pragmarx/google2fa": "^7.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^3.8|^4.0|^5.0",
+        "phpunit/phpunit": "^8.0|^9.0"
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
