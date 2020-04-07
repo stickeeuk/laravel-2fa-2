@@ -53,25 +53,25 @@ Publish the configuration file to your project with this command:
 
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
-enabled | | `env('LARAVEL_2FA_ENABLED', true)` | Enable or disable 2-factor checking |
-user_class | | `\App\User::class` | The user model class |
-required | | `env('LARAVEL_2FA_REQUIRED', false)` | If 2FA is required or optional for users (force enrollment) |
-middleware_groups | | `['web', 'nova']` | Middleware groups to add 2FA to. It will allways only apply to authenticated users |
-routes_middleware | | `['web']` | Middleware to apply to routes used by the 2FA system (e.g. /2fa/register) |
-routes_prefix | | `'2fa'` | Prefix for routes used by the 2fa system |
-state_store | | `\Stickee\Laravel2fa\StateStores\SessionStateStore::class` | A class implementing `\Stickee\Laravel2fa\Contracts\StateStore` to store state |
-session_prefix | | `'laravel-2fa'` | Prefix for variables stored in the session to prevent collisions |
-drivers | | `['google' => \Stickee\Laravel2fa\Drivers\Google::class]` | A list of classes implementing \Stickee\Laravel2fa\Contracts\Driver. The key should be the driver name |
-qr_code_generator | | `\BaconQrCode\Renderer\Image\SvgImageBackEnd::class` | A backend for Bacon QR Code - one of: `\BaconQrCode\Renderer\Image\ImagickImageBackEnd`, `\BaconQrCode\Renderer\Image\SvgImageBackEnd`, `\BaconQrCode\Renderer\Image\EpsImageBackEnd`. To use a completeley custom generator see [How Do I](#how-do-i) |
-qr_code_size | | `400` | The size in pixels of the QR code |
-lifetime | | `0` | The number of minutes of inactivity a user is allowed before they must reauthenticate. Set to zero for no limit |
-keep_alive | | `true` | Whether to update the last activity time with each pageview. If set to `false` then "lifetime" becomes time since login |
-prevent_reuse | | `false` | Prevent the user from logging in twice with the same code |
-recovery_codes_count | | `10` | How many recovery codes to generate when a user registers |
-redirect_after_login | | `'/'` | was trying to get to) |
-redirect_after_logout | | `'/'` | The URL to redirect to after logging out |
-app_name | | `null` | The app name to use in the authenticator (use null to use app.name) |
-username_attribute | | `'email'` | The attribute on the User model to use as the username in the authenticator |
+enabled | `bool` | `env('LARAVEL_2FA_ENABLED', true)` | Enable or disable 2-factor checking |
+user_class | `string` | `\App\User::class` | The user model class |
+required | `bool` | `env('LARAVEL_2FA_REQUIRED', false)` | If 2FA is required or optional for users (force enrollment) |
+middleware_groups | `array` | `['web', 'nova']` | Middleware groups to add 2FA to. It will always only apply to authenticated users |
+routes_middleware | `array` | `['web']` | Middleware to apply to routes used by the 2FA system (e.g. /2fa/register) |
+routes_prefix | `string` | `'2fa'` | Prefix for routes used by the 2fa system |
+state_store | `string` | `\Stickee\Laravel2fa\StateStores\SessionStateStore::class` | A class implementing `\Stickee\Laravel2fa\Contracts\StateStore` to store state |
+session_prefix | `string` | `'laravel-2fa'` | Prefix for variables stored in the session to prevent collisions |
+drivers | `array` | `['google' => \Stickee\Laravel2fa\Drivers\Google::class]` | A list of classes implementing \Stickee\Laravel2fa\Contracts\Driver. The key should be the driver name |
+qr_code_generator | `string` | `\BaconQrCode\Renderer\Image\SvgImageBackEnd::class` | A backend for Bacon QR Code - one of: `\BaconQrCode\Renderer\Image\ImagickImageBackEnd`, `\BaconQrCode\Renderer\Image\SvgImageBackEnd`, `\BaconQrCode\Renderer\Image\EpsImageBackEnd`. To use a completeley custom generator see [How Do I](#how-do-i) |
+qr_code_size | `int` | `400` | The size in pixels of the QR code |
+lifetime | `int` | `0` | The number of minutes of inactivity a user is allowed before they must reauthenticate. Set to zero for no limit |
+keep_alive | `bool` | `true` | Whether to update the last activity time with each pageview. If set to `false` then "lifetime" becomes time since login |
+prevent_reuse | `bool` | `false` | Prevent the user from logging in twice with the same code |
+recovery_codes_count | `int` | `10` | How many recovery codes to generate when a user registers |
+redirect_after_login | `string` | `'/'` | The URL to redirect to after logging in (if we don't know where the user was trying to get to) |
+redirect_after_logout | `string` | `'/'` | The URL to redirect to after logging out |
+app_name | `?string` | `null` | The app name to use in the authenticator (use null to use `app.name`) |
+username_attribute | `string` | `'email'` | The attribute on the User model to use as the username in the authenticator |
 
 ## Customisation
 

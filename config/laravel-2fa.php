@@ -38,7 +38,7 @@ return [
      |--------------------------------------------------------------------------
      |
      | Middleware groups to add 2FA to.
-     | It will allways only apply to authenticated users
+     | It will always only apply to authenticated users
      |
      */
     'middleware_groups' => ['web', 'nova'],

@@ -2,7 +2,7 @@
     "name": "stickee/laravel-2fa",
     "type": "library",
     "description": "Stickee Laravel 2FA - add two factor authentication",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "keywords": [
         "2fa",
         "laravel"
