@@ -28,6 +28,9 @@ class Laravel2faAddColumns extends Migration
     {
         Schema::table($this->getTable(), function (Blueprint $table) {
             $table->dropColumn('laravel2fa_enabled');
+        });
+
+        Schema::table($this->getTable(), function (Blueprint $table) {
             $table->dropColumn('laravel2fa_data');
         });
     }
