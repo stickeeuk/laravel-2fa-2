@@ -2,22 +2,20 @@
 
 namespace Stickee\Laravel2fa\Services;
 
-use Exception;
-use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Hash;
 use Stickee\Laravel2fa\Contracts\Driver;
 use Stickee\Laravel2fa\Contracts\RecoveryCodeGenerator;
 use Stickee\Laravel2fa\Contracts\StateStore;
-use Stickee\Laravel2fa\Drivers\Google;
+use Stickee\Laravel2fa\Models\Laravel2fa;
 
 class Laravel2faService
 {
     /**
-     * The current user
+     * The current Laravel2fa instance
      *
-     * @var \Illuminate\Foundation\Auth\User $user
+     * @var \Stickee\Laravel2fa\Models\Laravel2fa $laravel2fa
      */
-    private $user;
+    private $laravel2fa;
 
     /**
      * The state store
@@ -41,13 +39,6 @@ class Laravel2faService
     private $recoveryCodeGenerator;
 
     /**
-     * The user data manager
-     *
-     * @var \Stickee\Laravel2fa\Contracts\UserDataManager $userDataManager
-     */
-    private $userDataManager;
-
-    /**
      * The enabled driver names
      *
      * @var string[] $drivers
@@ -57,24 +48,21 @@ class Laravel2faService
     /**
      * Constructor
      *
-     * @param \Illuminate\Foundation\Auth\User $user The current user
+     * @param \Stickee\Laravel2fa\Models\Laravel2fa $laravel2fa The current Laravel2fa instance
      * @param \Stickee\Laravel2fa\Contracts\StateStore $stateStore The state store
      * @param \Stickee\Laravel2fa\Services\KeepAlive $keepAlive The keep-alive service
      * @param \Stickee\Laravel2fa\Contracts\RecoveryCodeGenerator $recoveryCodeGenerator The recovery code generator
-     * @param \Stickee\Laravel2fa\Contracts\UserDataManager $userDataManager The user data manager
      */
     public function __construct(
-        User $user,
+        Laravel2fa $laravel2fa,
         StateStore $stateStore,
         KeepAlive $keepAlive,
-        RecoveryCodeGenerator $recoveryCodeGenerator,
-        UserDataManager $userDataManager
+        RecoveryCodeGenerator $recoveryCodeGenerator
     ) {
-        $this->user = $user;
+        $this->laravel2fa = $laravel2fa;
         $this->stateStore = $stateStore;
         $this->keepAlive = $keepAlive;
         $this->recoveryCodeGenerator = $recoveryCodeGenerator;
-        $this->userDataManager = $userDataManager;
         $this->drivers = config('laravel-2fa.drivers');
     }
 
@@ -85,7 +73,7 @@ class Laravel2faService
      */
     public function needsToAuthenticate(): bool
     {
-        return $this->user->laravel2fa_enabled;
+        return $this->laravel2fa->enabled;
     }
 
     /**
@@ -206,7 +194,7 @@ class Laravel2faService
     private function getStateName($name): string
     {
         return config('state_prefix', 'laravel-2fa')
-            . '.' . $this->user->id
+            . '.' . $this->laravel2fa->id
             . '.' . $name;
     }
 
@@ -238,15 +226,14 @@ class Laravel2faService
      */
     public function enable(string $driverName): void
     {
-        if (!$this->user->laravel2fa_enabled) {
-            $this->user->laravel2fa_enabled = true;
-            $this->user->save();
+        if (!$this->laravel2fa->enabled) {
+            $this->laravel2fa->update(['enabled' => true]);
         }
 
-        $enabled = $this->userDataManager->getValue('enabled', []);
+        $enabled = $this->laravel2fa->getValue('enabled', []);
         $enabled[$driverName] = true;
 
-        $this->userDataManager->setValue('enabled', $enabled);
+        $this->laravel2fa->setValue('enabled', $enabled);
     }
 
     /**
@@ -256,14 +243,13 @@ class Laravel2faService
      */
     public function disable(string $driverName): void
     {
-        $enabled = $this->userDataManager->getValue('enabled', []);
+        $enabled = $this->laravel2fa->getValue('enabled', []);
         $enabled[$driverName] = false;
 
-        $this->userDataManager->setValue('enabled', $enabled);
+        $this->laravel2fa->setValue('enabled', $enabled);
 
         if (empty(array_filter($enabled))) {
-            $this->user->laravel2fa_enabled = false;
-            $this->user->save();
+            $this->laravel2fa->update(['enabled' => false]);
         }
     }
 
@@ -276,7 +262,7 @@ class Laravel2faService
      */
     private function isEnabled(string $driverName): bool
     {
-        $enabled = $this->userDataManager->getValue('enabled', []);
+        $enabled = $this->laravel2fa->getValue('enabled', []);
 
         return !empty($enabled[$driverName]);
     }
@@ -294,8 +280,8 @@ class Laravel2faService
             $this->drivers[$driverName],
             [
                 'name' => $driverName,
-                'user' => $this->user,
-                'userDataManager' => $this->userDataManager,
+                'user' => $this->laravel2fa->user,
+                'laravel2fa' => $this->laravel2fa,
             ]
         );
     }
@@ -307,7 +293,7 @@ class Laravel2faService
      */
     private function getLastAuthenticated(): ?int
     {
-        return $this->userDataManager->getValue('last_authenticated');
+        return $this->laravel2fa->getValue('last_authenticated');
     }
 
     /**
@@ -315,7 +301,7 @@ class Laravel2faService
      */
     private function updateLastAuthenticated(): void
     {
-        $this->userDataManager->setValue('last_authenticated', time());
+        $this->laravel2fa->setValue('last_authenticated', time());
     }
 
     /**
@@ -325,7 +311,7 @@ class Laravel2faService
      */
     public function getRecoveryCodes(): array
     {
-        return $this->userDataManager->getValue('recovery_codes', []);
+        return $this->laravel2fa->getValue('recovery_codes', []);
     }
 
     /**
@@ -335,7 +321,7 @@ class Laravel2faService
      */
     private function setRecoveryCodes(array $recoveryCodes): void
     {
-        $this->userDataManager->setValue('recovery_codes', $recoveryCodes);
+        $this->laravel2fa->setValue('recovery_codes', $recoveryCodes);
     }
 
     /**

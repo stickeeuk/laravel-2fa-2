@@ -14,6 +14,31 @@ return [
 
     /*
      |--------------------------------------------------------------------------
+     | Models
+     |--------------------------------------------------------------------------
+     |
+     | The authenticable models and any necessary data.
+     |
+     */
+    'models' => [
+        [
+            'class' => \App\User::class,
+
+            /*
+            |--------------------------------------------------------------------------
+            | Username attribute
+            |--------------------------------------------------------------------------
+            |
+            | The attribute on the authenticatable model to use as the username
+            | in the authenticator
+            |
+            */
+            'username_attribute' => 'email',
+        ],
+    ],
+
+    /*
+     |--------------------------------------------------------------------------
      | User class
      |--------------------------------------------------------------------------
      |
@@ -197,12 +222,11 @@ return [
 
     /*
      |--------------------------------------------------------------------------
-     | Username attribute
+     | Table name
      |--------------------------------------------------------------------------
      |
-     | The attribute on the User model to use as the username
-     | in the authenticator
+     | The table name to use to store all related Laravel 2fa data in.
      |
      */
-    'username_attribute' => 'email',
+    'table_name' => 'laravel_2fa',
 ];

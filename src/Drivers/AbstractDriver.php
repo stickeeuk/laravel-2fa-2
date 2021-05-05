@@ -3,10 +3,9 @@
 namespace Stickee\Laravel2fa\Drivers;
 
 use Closure;
-use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Route;
 use Stickee\Laravel2fa\Contracts\Driver;
-use Stickee\Laravel2fa\Contracts\UserDataManager;
+use Stickee\Laravel2fa\Models\Laravel2fa;
 
 abstract class AbstractDriver implements Driver
 {
@@ -20,20 +19,20 @@ abstract class AbstractDriver implements Driver
     /**
      * The user data manager
      *
-     * @var \Stickee\Laravel2fa\Contracts\UserDataManager $userDataManager
+     * @var \Stickee\Laravel2fa\Models\Laravel2fa $laravel2fa
      */
-    private $userDataManager;
+    private $laravel2fa;
 
     /**
      * Constructor
      *
      * @param string $name The driver name
-     * @param \Stickee\Laravel2fa\Contracts\UserDataManager $userDataManager The user data manager
+     * @param \Stickee\Laravel2fa\Models\Laravel2fa $laravel2fa The Laravel2fa instance.
      */
-    public function __construct(string $name, UserDataManager $userDataManager)
+    public function __construct(string $name, Laravel2fa $laravel2fa)
     {
         $this->name = $name;
-        $this->userDataManager = $userDataManager;
+        $this->laravel2fa = $laravel2fa;
     }
 
     /**
@@ -47,23 +46,23 @@ abstract class AbstractDriver implements Driver
     }
 
     /**
-     * Get the users's data for this driver
+     * Get the Laravel2fa's data for this driver
      *
      * @return array
      */
     protected function getData(): array
     {
-        return $this->userDataManager->getDriver($this->name);
+        return $this->laravel2fa->getDriver($this->name);
     }
 
     /**
-     * Set the users's data for this driver
+     * Set the Laravel2fa's data for this driver
      *
      * @param array $data The data
      */
     protected function setData(array $data): void
     {
-        $this->userDataManager->setDriver($this->name, $data);
+        $this->laravel2fa->setDriver($this->name, $data);
     }
 
     protected static function registerRoutes(string $name, Closure $function)

@@ -4,6 +4,9 @@ namespace Stickee\Laravel2fa\Commands;
 
 use Illuminate\Console\Command;
 
+/**
+ * TODO: Fix - outdated command
+ */
 class Reauthenticate extends Command
 {
     /**

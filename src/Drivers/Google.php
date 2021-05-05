@@ -6,8 +6,8 @@ use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Route;
 use PragmaRX\Google2FA\Google2FA;
 use Stickee\Laravel2fa\Contracts\QrCodeGenerator;
-use Stickee\Laravel2fa\Contracts\UserDataManager;
 use Stickee\Laravel2fa\Http\Controllers\GoogleController;
+use Stickee\Laravel2fa\Models\Laravel2fa;
 
 class Google extends AbstractDriver
 {
@@ -36,19 +36,19 @@ class Google extends AbstractDriver
      * Constructor
      *
      * @param string $name The driver name
-     * @param \Stickee\Laravel2fa\Contracts\UserDataManager $userDataManager The user data manager
+     * @param \Stickee\Laravel2fa\Models\Laravel2fa $laravel2fa The Laravel2fa instance
      * @param \Illuminate\Foundation\Auth\User $user The user
      * @param \PragmaRX\Google2FA\Google2FA $google2fa Google 2FA service
      * @param \Stickee\Laravel2fa\Contracts\QrCodeGenerator $qrCodeGenerator QR code generator
      */
     public function __construct(
         string $name,
-        UserDataManager $userDataManager,
+        Laravel2fa $laravel2fa,
         User $user,
         Google2FA $google2fa,
         QrCodeGenerator $qrCodeGenerator
     ) {
-        parent::__construct($name, $userDataManager);
+        parent::__construct($name, $laravel2fa);
 
         $this->user = $user;
         $this->google2fa = $google2fa;
@@ -96,7 +96,19 @@ class Google extends AbstractDriver
     public function getRegistrationViewData(): array
     {
         $data = $this->getData();
-        $usernameAttribute = config('laravel-2fa.username_attribute');
+
+        $usernameAttribute = 'email';
+        $userClass = get_class($this->user);
+
+        foreach (config('laravel-2fa.models') as $model) {
+            if (in_array('username_attribute', $model)
+                && $model['class'] ?? null === $userClass
+            ) {
+                $usernameAttribute = $model['username_attribute'];
+
+                break;
+            }
+        }
 
         $qrCodeDestinationUrl = $this->google2fa->getQRCodeUrl(
             config('laravel-2fa.app_name') ?? config('app.name'),

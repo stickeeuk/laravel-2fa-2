@@ -8,16 +8,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Stickee\Laravel2fa\Commands\Reauthenticate;
-use Stickee\Laravel2fa\Contracts\Driver;
 use Stickee\Laravel2fa\Contracts\QrCodeGenerator;
 use Stickee\Laravel2fa\Contracts\RecoveryCodeGenerator as RecoveryCodeGeneratorInterface;
 use Stickee\Laravel2fa\Contracts\StateStore;
-use Stickee\Laravel2fa\Contracts\UserDataManager as UserDataManagerInterface;
 use Stickee\Laravel2fa\Http\Middleware\Laravel2fa;
+use Stickee\Laravel2fa\Models\Laravel2fa as Laravel2faModel;
 use Stickee\Laravel2fa\Services\BaconQrCodeGenerator;
 use Stickee\Laravel2fa\Services\Laravel2faService;
 use Stickee\Laravel2fa\Services\RecoveryCodeGenerator;
-use Stickee\Laravel2fa\Services\UserDataManager;
 
 /**
  * 2FA service provider
@@ -34,22 +32,15 @@ class ServiceProvider extends BaseServiceProvider
         );
 
         $this->app->when(Laravel2faService::class)
-            ->needs(User::class)
+            ->needs(Laravel2fa::class)
             ->give(function () {
-                return Auth::user();
-            });
-
-        $this->app->when(UserDataManager::class)
-            ->needs(User::class)
-            ->give(function () {
-                return Auth::user();
+                return Laravel2faModel::getByModel(Auth::user());
             });
 
         $this->app->bind(StateStore::class, config('laravel-2fa.state_store'));
         $this->app->bind(ImageBackEndInterface::class, config('laravel-2fa.qr_code_generator'));
         $this->app->bind(QrCodeGenerator::class, BaconQrCodeGenerator::class);
         $this->app->bind(RecoveryCodeGeneratorInterface::class, RecoveryCodeGenerator::class);
-        $this->app->bind(UserDataManagerInterface::class, UserDataManager::class);
     }
 
     /**
