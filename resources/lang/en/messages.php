@@ -11,7 +11,7 @@ return [
             and secures your logins from attackers exploiting weak or stolen credentials.',
         'choose' => 'Please choose a method.',
         'recovery' => 'If you need to log in without your authenticator, you can use these one-time recovery codes.
-            Please copy these somewhere secure. They will not be displyed again.',
+            Please copy these somewhere secure. They will not be displayed again.',
         'recovery-after' => 'When you have saved your recovery codes, please continue:',
         'register-with' => 'Register with :name',
     ],
