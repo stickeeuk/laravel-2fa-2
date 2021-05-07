@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Laravel2fa extends Model
 {
-
     /**
      * The attributes that are mass assignable.
      *
@@ -57,7 +56,7 @@ class Laravel2fa extends Model
     public function getDataAttribute(): array
     {
         return empty($this->attributes['data'])
-            ? $this->attributes['data']
+            ? $this->attributes['data'] ?? []
             : decrypt($this->attributes['data']);
     }
 
@@ -128,6 +127,22 @@ class Laravel2fa extends Model
     }
 
     /**
+     * Create an instance of a Laravel2fa model assigned to the given model.
+     *
+     * @param \Illuminate\Database\Eloquent\Model $model
+     * @return null|\Stickee\Laravel2fa\Models\Laravel2fa
+     */
+     public static function createByModel($model)
+     {
+        return self::create([
+            'user_type' => $model->getMorphClass(),
+            'user_id' => $model->getKey(),
+            'enabled' => config('laravel-2fa.required'),
+            'data' => [],
+        ]);
+     }
+
+    /**
      * Get the first instance of a Laravel2fa model with the given user type and user id.
      *
      * @param \Illuminate\Database\Eloquent\Model $model
@@ -135,6 +150,8 @@ class Laravel2fa extends Model
      */
     public static function getByModel($model)
     {
-        return Laravel2fa::where('user_type', $model->getMorphClass())->where('user_id', $model->getKey())->first();
+        return self::where('user_type', $model->getMorphClass())
+            ->where('user_id', $model->getKey())
+            ->first();
     }
 }

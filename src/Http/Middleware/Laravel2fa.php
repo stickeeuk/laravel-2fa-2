@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Stickee\Laravel2fa\Http\Controllers\Laravel2faController;
-use Stickee\Laravel2fa\Models\Laravel2fa;
+use Stickee\Laravel2fa\Models\Laravel2fa as Laravel2faModel;
 use Stickee\Laravel2fa\Services\Laravel2faService;
 
 class Laravel2fa
@@ -32,9 +32,14 @@ class Laravel2fa
             return $next($request);
         }
 
-        // If the user doesn't have 2FA enabled...
-        $laravel2fa = Laravel2fa::getByModel(Auth::user());
+        /**
+         * TODO: make this more abstract?
+         * @var \Illuminate\Database\Eloquent\Model
+         */
+        $user = Auth::user();
+        $laravel2fa = Laravel2faModel::getByModel($user) ?? Laravel2faModel::createByModel($user);
 
+        // If the user doesn't have 2FA enabled...
         if (!$laravel2fa->laravel2fa_enabled) {
             // ... if it's required, force them to enable it
             if (config('laravel-2fa.required')) {

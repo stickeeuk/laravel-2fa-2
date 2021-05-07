@@ -4,14 +4,14 @@ return [
     'cancel' => 'Cancel',
     'confirm' => 'Confirm',
     'register' => [
-        'heading' => 'Regsiter for Two Factor Authentication',
+        'heading' => 'Register for Two Factor Authentication',
         'intro' => 'Two factor authentication (2FA) strengthens access security by requiring two methods
             (also referred to as factors) to verify your identity.
             Two factor authentication protects against phishing, social engineering and password brute force attacks
             and secures your logins from attackers exploiting weak or stolen credentials.',
         'choose' => 'Please choose a method.',
         'recovery' => 'If you need to log in without your authenticator, you can use these one-time recovery codes.
-            Please copy these somewhere secure. They will not be displyed again.',
+            Please copy these somewhere secure. They will not be displayed again.',
         'recovery-after' => 'When you have saved your recovery codes, please continue:',
         'register-with' => 'Register with :name',
     ],

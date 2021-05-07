@@ -3,7 +3,6 @@
 namespace Stickee\Laravel2fa;
 
 use BaconQrCode\Renderer\Image\ImageBackEndInterface;
-use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
@@ -32,9 +31,13 @@ class ServiceProvider extends BaseServiceProvider
         );
 
         $this->app->when(Laravel2faService::class)
-            ->needs(Laravel2fa::class)
+            ->needs(Laravel2faModel::class)
             ->give(function () {
-                return Laravel2faModel::getByModel(Auth::user());
+                $user = Auth::user();
+
+                return $user
+                    ? (Laravel2faModel::getByModel($user) ?? Laravel2faModel::createByModel($user))
+                    : null;
             });
 
         $this->app->bind(StateStore::class, config('laravel-2fa.state_store'));

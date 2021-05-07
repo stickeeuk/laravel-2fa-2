@@ -12,13 +12,6 @@ use Stickee\Laravel2fa\Models\Laravel2fa;
 class Google extends AbstractDriver
 {
     /**
-     * The user
-     *
-     * @var \Illuminate\Foundation\Auth\User $user
-     */
-    protected $user;
-
-    /**
      * Google 2FA service
      *
      * @var \PragmaRX\Google2FA\Google2FA $google2fa
@@ -44,22 +37,22 @@ class Google extends AbstractDriver
     public function __construct(
         string $name,
         Laravel2fa $laravel2fa,
-        User $user,
         Google2FA $google2fa,
         QrCodeGenerator $qrCodeGenerator
     ) {
         parent::__construct($name, $laravel2fa);
 
-        $this->user = $user;
         $this->google2fa = $google2fa;
         $this->qrCodeGenerator = $qrCodeGenerator;
     }
 
     public static function boot(string $name)
     {
-        self::registerRoutes($name, function () {
-            Route::get('register', GoogleController::class . '@register')->name('register');
-            Route::post('confirm', GoogleController::class . '@confirm')->name('confirm');
+        $guards = implode(', ', config('laravel-2fa.google.guards') ?? ['web']);
+
+        self::registerRoutes($name, function () use ($guards) {
+            Route::middleware("auth:$guards")->get('register', GoogleController::class . '@register')->name('register');
+            Route::middleware("auth:$guards")->post('confirm', GoogleController::class . '@confirm')->name('confirm');
         });
     }
 
@@ -98,7 +91,7 @@ class Google extends AbstractDriver
         $data = $this->getData();
 
         $usernameAttribute = 'email';
-        $userClass = get_class($this->user);
+        $userClass = get_class($this->laravel2fa->user);
 
         foreach (config('laravel-2fa.models') as $model) {
             if (in_array('username_attribute', $model)
@@ -112,7 +105,7 @@ class Google extends AbstractDriver
 
         $qrCodeDestinationUrl = $this->google2fa->getQRCodeUrl(
             config('laravel-2fa.app_name') ?? config('app.name'),
-            $this->user->$usernameAttribute,
+            $this->laravel2fa->user->$usernameAttribute,
             $data['secret']
         );
 

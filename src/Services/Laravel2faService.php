@@ -280,7 +280,6 @@ class Laravel2faService
             $this->drivers[$driverName],
             [
                 'name' => $driverName,
-                'user' => $this->laravel2fa->user,
                 'laravel2fa' => $this->laravel2fa,
             ]
         );
