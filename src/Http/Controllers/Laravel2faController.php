@@ -45,7 +45,7 @@ class Laravel2faController extends Controller
             'enabledDrivers' => $service->startAuthentication(),
         ];
 
-        $request->session()->flash('laravel-2fa.redirct_url', $request->url());
+        $request->session()->flash('laravel-2fa.redirect_url', $request->url());
 
         return view('laravel-2fa::laravel.authenticate', $data);
     }
@@ -64,7 +64,7 @@ class Laravel2faController extends Controller
         $service->setAuthenticated(true);
 
         $redirect = config('laravel-2fa.redirect_after_login', '/');
-        $redirect = $request->session()->get('laravel-2fa.redirct_url', $redirect);
+        $redirect = $request->session()->get('laravel-2fa.redirect_url', $redirect);
 
         return redirect($redirect);
     }

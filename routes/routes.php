@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use Stickee\Laravel2fa\Http\Controllers\Laravel2faController;
 
-//Route::get('register', Laravel2faController::class . '@register2')->name('register');
 Route::post('confirm', Laravel2faController::class . '@confirm')->name('confirm');
 Route::get('authenticate', Laravel2faController::class . '@authenticate')->name('authenticate');
 Route::post('do-authentication', Laravel2faController::class . '@doAuthentication')->name('do-authentication');
