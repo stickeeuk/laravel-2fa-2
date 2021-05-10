@@ -12,15 +12,22 @@ return [
      */
     'enabled' => env('LARAVEL_2FA_ENABLED', true),
 
-    /*
-     |--------------------------------------------------------------------------
-     | User class
-     |--------------------------------------------------------------------------
-     |
-     | The user model class
-     |
-     */
-    'user_class' => \App\User::class,
+    'models' => [
+        [
+            'class' => \App\User::class,
+
+            /*
+            |--------------------------------------------------------------------------
+            | Username attribute
+            |--------------------------------------------------------------------------
+            |
+            | The attribute on the authenticatable model to use as the username
+            | in the authenticator
+            |
+            */
+            'username_attribute' => 'email',
+        ],
+    ],
 
     /*
      |--------------------------------------------------------------------------
@@ -51,7 +58,7 @@ return [
      | Middleware to apply to routes used by the 2FA system (e.g. /2fa/register)
      |
      */
-    'routes_middleware' => ['web'],
+    'routes_middleware' => ['web', 'auth:web,customer'],
 
     /*
      |--------------------------------------------------------------------------
@@ -95,6 +102,7 @@ return [
      */
     'drivers' => [
         'google' => \Stickee\Laravel2fa\Drivers\Google::class,
+        'twilio' => \Stickee\Laravel2fa\Drivers\Twilio::class,
     ],
 
     /*
@@ -205,4 +213,33 @@ return [
      |
      */
     'username_attribute' => 'email',
+
+    /*
+     |--------------------------------------------------------------------------
+     | Google 2FA specific values
+     |--------------------------------------------------------------------------
+     |
+     | Any specific values relating to Google 2FA
+     |
+     */
+    'google' => [
+        'guards' => ['web'],
+    ],
+
+    /*
+     |--------------------------------------------------------------------------
+     | Twilio 2FA specific values
+     |--------------------------------------------------------------------------
+     |
+     | Any specific values relating to Twilio 2FA
+     |
+     */
+    'twilio' => [
+        'guards' => ['web'],
+        'from' => env('LARAVEL_2FA_TWILIO_FROM'),
+        'sid' => env('LARAVEL_2FA_TWILIO_SID'),
+        'token' => env('LARAVEL_2FA_TWILIO_TOKEN'),
+        'message' => 'Here\'s your authentication code: [code]',
+    ],
+
 ];

@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Stickee\Laravel2fa\Commands\Reauthenticate;
-use Stickee\Laravel2fa\Contracts\Driver;
 use Stickee\Laravel2fa\Contracts\QrCodeGenerator;
 use Stickee\Laravel2fa\Contracts\RecoveryCodeGenerator as RecoveryCodeGeneratorInterface;
 use Stickee\Laravel2fa\Contracts\StateStore;

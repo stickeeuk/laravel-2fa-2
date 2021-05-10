@@ -2,13 +2,11 @@
 
 namespace Stickee\Laravel2fa\Services;
 
-use Exception;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Hash;
 use Stickee\Laravel2fa\Contracts\Driver;
 use Stickee\Laravel2fa\Contracts\RecoveryCodeGenerator;
 use Stickee\Laravel2fa\Contracts\StateStore;
-use Stickee\Laravel2fa\Drivers\Google;
 
 class Laravel2faService
 {
@@ -85,7 +83,7 @@ class Laravel2faService
      */
     public function needsToAuthenticate(): bool
     {
-        return $this->user->laravel2fa_enabled;
+        return $this->userDataManager->get2faModel()->enabled ?? false;
     }
 
     /**
@@ -238,9 +236,10 @@ class Laravel2faService
      */
     public function enable(string $driverName): void
     {
-        if (!$this->user->laravel2fa_enabled) {
-            $this->user->laravel2fa_enabled = true;
-            $this->user->save();
+        $laravel2fa = $this->userDataManager->get2faModel();
+
+        if (!$laravel2fa->enabled) {
+            $laravel2fa->update(['enabled' => true]);
         }
 
         $enabled = $this->userDataManager->getValue('enabled', []);

@@ -3,7 +3,6 @@
 namespace Stickee\Laravel2fa\Drivers;
 
 use Closure;
-use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Route;
 use Stickee\Laravel2fa\Contracts\Driver;
 use Stickee\Laravel2fa\Contracts\UserDataManager;

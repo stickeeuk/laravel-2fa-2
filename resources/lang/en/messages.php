@@ -4,7 +4,7 @@ return [
     'cancel' => 'Cancel',
     'confirm' => 'Confirm',
     'register' => [
-        'heading' => 'Regsiter for Two Factor Authentication',
+        'heading' => 'Register for Two Factor Authentication',
         'intro' => 'Two factor authentication (2FA) strengthens access security by requiring two methods
             (also referred to as factors) to verify your identity.
             Two factor authentication protects against phishing, social engineering and password brute force attacks
