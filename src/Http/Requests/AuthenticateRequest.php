@@ -32,4 +32,17 @@ class AuthenticateRequest extends FormRequest
             ],
         ];
     }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'laravel_2fa_code.required' => 'An authentication code is required',
+            'laravel_2fa_code.string' => 'An authentication code is required',
+        ];
+    }
 }

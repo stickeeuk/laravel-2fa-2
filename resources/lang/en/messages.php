@@ -20,5 +20,9 @@ return [
         'intro' => 'Enter the pin from Google Authenticator 2FA or a recovery code.',
         'code' => 'One Time Password / Recovery Code',
         'submit' => 'Authenticate',
+        'cooldown' => [
+            'message' => 'We can only send an activation code every [cooldown_value] [cooldown_measurement].
+                Please wait another [available_at_value] [available_at_measurement] before trying again.',
+        ],
     ],
 ];

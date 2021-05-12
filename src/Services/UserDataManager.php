@@ -47,6 +47,20 @@ class UserDataManager implements UserDataManagerInterface
     }
 
     /**
+     * Get the user's laravel 2fa instance or create a new one
+     *
+     * @return Stickee\Laravel2fa\Models\Laravel2fa
+     */
+    public function getOrCreate2faModel(): Laravel2fa
+    {
+        if (!$this->laravel2fa) {
+            $this->laravel2fa = Laravel2fa::createByModel($this->user);
+        }
+
+        return $this->laravel2fa;
+    }
+
+    /**
      * Get the user's data
      *
      * @return array

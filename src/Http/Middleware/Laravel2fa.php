@@ -17,23 +17,25 @@ class Laravel2fa
      *
      * @param \Illuminate\Http\Request $request The request
      * @param \Closure $next The next method
+     * @param null|string $guard The guard
      *
      * @return mixed
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next, string $guard = null)
     {
+        $user = $request->user($guard);
+
         // Don't do 2FA if it's disabled or the user is not logged in
-        if (!config('laravel-2fa.enabled') || Auth::guest()) {
+        if (!config('laravel-2fa.enabled') || empty($user)) {
             return $next($request);
         }
-
         // Don't do 2FA for 2FA setup / validation routes
         if (Str::startsWith($request->route()->action['prefix'] ?? '', config('laravel-2fa.routes_prefix'))) {
             return $next($request);
         }
 
         // If the user doesn't have 2FA enabled...
-        $laravel2fa = Laravel2faModel::getByModel(Auth::user());
+        $laravel2fa = Laravel2faModel::getByModel($user);
         if (!$laravel2fa || (!$laravel2fa->enabled ?? false)) {
             // ... if it's required, force them to enable it
             if (config('laravel-2fa.required')) {
@@ -48,9 +50,13 @@ class Laravel2fa
         $service = app(Laravel2faService::class);
 
         if ($service->needsToAuthenticate() && !$service->isAuthenticated()) {
+            if ($request->ajax()) {
+                return response()->json(['error' => '2fa required'], 401);
+            }
+
             $controller = app(Laravel2faController::class);
 
-            return response(app()->call([$controller, 'authenticate']));
+            return app()->call([$controller, 'startAuthentication']);
         }
 
         return $next($request);

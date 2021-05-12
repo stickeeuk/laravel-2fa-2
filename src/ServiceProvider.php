@@ -35,13 +35,29 @@ class ServiceProvider extends BaseServiceProvider
         $this->app->when(Laravel2faService::class)
             ->needs(User::class)
             ->give(function () {
-                return Auth::user();
+                foreach (config('auth.guards') as $guard => $data) {
+                    $user = auth($guard)->user();
+
+                    if ($user) {
+                        break;
+                    }
+                }
+
+                return $user ?? null;
             });
 
         $this->app->when(UserDataManager::class)
             ->needs(User::class)
-            ->give(function () {
-                return Auth::user();
+            ->give(function ($app) {
+                foreach (config('auth.guards') as $guard => $data) {
+                    $user = auth($guard)->user();
+
+                    if ($user) {
+                        break;
+                    }
+                }
+
+                return $user ?? null;
             });
 
         $this->app->bind(StateStore::class, config('laravel-2fa.state_store'));
@@ -63,8 +79,8 @@ class ServiceProvider extends BaseServiceProvider
 
         $this->app['router']->aliasMiddleware('laravel-2fa', Laravel2fa::class);
 
-        foreach (config('laravel-2fa.middleware_groups') as $group) {
-            $this->app['router']->pushMiddlewareToGroup($group, Laravel2fa::class);
+        foreach (config('laravel-2fa.middleware_groups') as $group => $middleware) {
+            $this->app['router']->pushMiddlewareToGroup($group, $middleware);
         }
 
         $this->registerRoutes();

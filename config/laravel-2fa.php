@@ -12,23 +12,6 @@ return [
      */
     'enabled' => env('LARAVEL_2FA_ENABLED', true),
 
-    'models' => [
-        [
-            'class' => \App\User::class,
-
-            /*
-            |--------------------------------------------------------------------------
-            | Username attribute
-            |--------------------------------------------------------------------------
-            |
-            | The attribute on the authenticatable model to use as the username
-            | in the authenticator
-            |
-            */
-            'username_attribute' => 'email',
-        ],
-    ],
-
     /*
      |--------------------------------------------------------------------------
      | Required
@@ -48,7 +31,7 @@ return [
      | It will always only apply to authenticated users
      |
      */
-    'middleware_groups' => ['web', 'nova'],
+    'middleware_groups' => ['web' => 'laravel-2fa:web', 'nova' => 'laravel-2fa:web'],
 
     /*
      |--------------------------------------------------------------------------
@@ -58,7 +41,7 @@ return [
      | Middleware to apply to routes used by the 2FA system (e.g. /2fa/register)
      |
      */
-    'routes_middleware' => ['web', 'auth:web,customer'],
+    'routes_middleware' => ['web', 'auth:web'],
 
     /*
      |--------------------------------------------------------------------------
@@ -240,6 +223,7 @@ return [
         'sid' => env('LARAVEL_2FA_TWILIO_SID'),
         'token' => env('LARAVEL_2FA_TWILIO_TOKEN'),
         'message' => 'Here\'s your authentication code: [code]',
+        'cooldown_in_minutes' => 10,
     ],
 
 ];

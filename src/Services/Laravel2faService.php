@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use Stickee\Laravel2fa\Contracts\Driver;
 use Stickee\Laravel2fa\Contracts\RecoveryCodeGenerator;
 use Stickee\Laravel2fa\Contracts\StateStore;
+use Stickee\Laravel2fa\Exceptions\AuthenticationFailedToStartException;
 
 class Laravel2faService
 {
@@ -220,9 +221,14 @@ class Laravel2faService
 
         foreach ($this->drivers as $driverName => $class) {
             if ($this->isEnabled($driverName)) {
-                $enabledDrivers[] = $driverName;
+                $enabledDrivers[$driverName] = ['started' => true];
 
-               $this->make($driverName)->startAuthentication();
+                try {
+                    $this->make($driverName)->startAuthentication();
+                } catch (AuthenticationFailedToStartException $e) {
+                    $enabledDrivers[$driverName]['started'] = false;
+                    $enabledDrivers[$driverName]['exception'] = $e;
+                }
             }
         }
 
@@ -236,7 +242,7 @@ class Laravel2faService
      */
     public function enable(string $driverName): void
     {
-        $laravel2fa = $this->userDataManager->get2faModel();
+        $laravel2fa = $this->userDataManager->getOrCreate2faModel();
 
         if (!$laravel2fa->enabled) {
             $laravel2fa->update(['enabled' => true]);
@@ -273,7 +279,7 @@ class Laravel2faService
      *
      * @return bool
      */
-    private function isEnabled(string $driverName): bool
+    public function isEnabled(string $driverName): bool
     {
         $enabled = $this->userDataManager->getValue('enabled', []);
 

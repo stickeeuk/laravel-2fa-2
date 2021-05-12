@@ -72,4 +72,6 @@ abstract class AbstractDriver implements Driver
             ->as('laravel-2fa.' . $name . '.')
             ->group($function);
     }
+
+
 }

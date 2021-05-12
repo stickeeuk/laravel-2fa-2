@@ -2,6 +2,7 @@
 
 namespace Stickee\Laravel2fa\Drivers;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Route;
 use Stickee\Laravel2fa\Contracts\UserDataManager;
@@ -16,6 +17,18 @@ class Twilio extends AbstractDriver
      * @var \Illuminate\Foundation\Auth\User $user
      */
     protected $user;
+
+    /**
+     * The available routes for this driver.
+     *
+     * @var array
+     */
+    protected static $routes = [
+        'register' => true,
+        'send-code' => true,
+        'enter-code' => true,
+        'confirm' => true,
+    ];
 
     /**
      * Constructor
@@ -38,11 +51,22 @@ class Twilio extends AbstractDriver
     {
         $guards = implode(', ', config('laravel-2fa.twilio.guards') ?? ['web']);
 
-        self::registerRoutes($name, function () use ($guards) {
-            Route::middleware("auth:$guards")->get('register', TwilioController::class . '@register')->name('register');
-            Route::middleware("auth:$guards")->post('send-code', TwilioController::class . '@sendCode')->name('send-code');
-            Route::middleware("auth:$guards")->get('enter-code', TwilioController::class . '@enterCode')->name('enter-code');
-            Route::middleware("auth:$guards")->post('confirm', TwilioController::class . '@confirm')->name('confirm');
+        static::registerRoutes($name, function () use ($guards) {
+            if (static::$routes['register'] ?? true) {
+                Route::middleware("auth:$guards")->get('register', TwilioController::class . '@register')->name('register');
+            }
+
+            if (static::$routes['send-code'] ?? true) {
+                Route::middleware("auth:$guards")->post('send-code', TwilioController::class . '@sendCode')->name('send-code');
+            }
+
+            if (static::$routes['enter-code'] ?? true) {
+                Route::middleware("auth:$guards")->get('enter-code', TwilioController::class . '@enterCode')->name('enter-code');
+            }
+
+            if (static::$routes['confirm'] ?? true) {
+                Route::middleware("auth:$guards")->post('confirm', TwilioController::class . '@confirm')->name('confirm');
+            }
         });
     }
 
@@ -61,13 +85,6 @@ class Twilio extends AbstractDriver
 
         if (empty($secret)) {
             return false;
-        }
-
-        if ($newerThan !== null) {
-            // Timestamp must be at a boundary
-            if (now()->timestamp > $newerThan) {
-                return false;
-            }
         }
 
         $verified = $secret === $code;
@@ -109,7 +126,7 @@ class Twilio extends AbstractDriver
         $code = $this->generateCode();
 
         $data['secret'] = $code;
-        $data['generated_at'] = now()->timestamp;
+        $data['generated_at'] = Carbon::now()->timestamp;
 
         $this->setData($data);
 
@@ -121,8 +138,6 @@ class Twilio extends AbstractDriver
                 'body' => str_replace('[code]', $code, config('laravel-2fa.twilio.message')),
             ]
         );
-
-        \Log::info($code);
     }
 
     /**
