@@ -22,6 +22,13 @@ return [
      */
     'required' => env('LARAVEL_2FA_REQUIRED', false),
 
+    'guards' => [
+        'web' => [
+            'routes_prefix' => '/2fa',
+            'routes_middleware' => ['web', 'laravel-2fa:web'],
+        ],
+    ],
+
     /*
      |--------------------------------------------------------------------------
      | Middleware groups
@@ -42,16 +49,6 @@ return [
      |
      */
     'routes_middleware' => ['web', 'auth:web'],
-
-    /*
-     |--------------------------------------------------------------------------
-     | Routes prefix
-     |--------------------------------------------------------------------------
-     |
-     | Prefix for routes used by the 2fa system
-     |
-     */
-    'routes_prefix' => '2fa',
 
     /*
      |--------------------------------------------------------------------------

@@ -68,7 +68,6 @@ abstract class AbstractDriver implements Driver
     protected static function registerRoutes(string $name, Closure $function)
     {
         Route::middleware(config('laravel-2fa.routes_middleware'))
-            ->prefix(config('laravel-2fa.routes_prefix') . '/' . $name)
             ->as('laravel-2fa.' . $name . '.')
             ->group($function);
     }

@@ -11,10 +11,19 @@ use Stickee\Laravel2fa\Services\Laravel2faService;
 class Laravel2faController extends Controller
 {
     /**
+     * The guard to use on the routes.
+     *
+     * @var string
+     */
+    private $guard;
+
+    /**
      * Construtor
      */
-    public function __construct()
+    public function __construct(string $guard)
     {
+        $this->guard = $guard;
+
         $this->middleware(function ($request, $next) {
             $service = app(Laravel2faService::class);
 
@@ -64,7 +73,7 @@ class Laravel2faController extends Controller
         $request->session()->flash('laravel-2fa.start-authentication', $data);
         $request->session()->put('laravel-2fa.redirect_url', $request->url());
 
-        return redirect(route('laravel-2fa.authenticate'));
+        return redirect(route("laravel-2fa.{$this->guard}.authenticate"));
     }
 
     /**
@@ -77,6 +86,7 @@ class Laravel2faController extends Controller
     public function authenticate(Request $request)
     {
         $data = $request->session()->pull('laravel-2fa.start-authentication', []);
+        $data['guard'] = $this->guard;
 
         return view('laravel-2fa::laravel.authenticate', $data);
     }

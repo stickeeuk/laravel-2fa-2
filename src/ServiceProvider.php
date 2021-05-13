@@ -32,34 +32,6 @@ class ServiceProvider extends BaseServiceProvider
             __DIR__ . '/../config/laravel-2fa.php', 'laravel-2fa'
         );
 
-        $this->app->when(Laravel2faService::class)
-            ->needs(User::class)
-            ->give(function () {
-                foreach (config('auth.guards') as $guard => $data) {
-                    $user = auth($guard)->user();
-
-                    if ($user) {
-                        break;
-                    }
-                }
-
-                return $user ?? null;
-            });
-
-        $this->app->when(UserDataManager::class)
-            ->needs(User::class)
-            ->give(function ($app) {
-                foreach (config('auth.guards') as $guard => $data) {
-                    $user = auth($guard)->user();
-
-                    if ($user) {
-                        break;
-                    }
-                }
-
-                return $user ?? null;
-            });
-
         $this->app->bind(StateStore::class, config('laravel-2fa.state_store'));
         $this->app->bind(ImageBackEndInterface::class, config('laravel-2fa.qr_code_generator'));
         $this->app->bind(QrCodeGenerator::class, BaconQrCodeGenerator::class);
@@ -125,7 +97,6 @@ class ServiceProvider extends BaseServiceProvider
         }
 
         Route::middleware(config('laravel-2fa.routes_middleware'))
-            ->prefix(config('laravel-2fa.routes_prefix'))
             ->as('laravel-2fa.')
             ->group(__DIR__ . '/../routes/routes.php');
     }
