@@ -227,7 +227,7 @@ class Laravel2faService
                     $this->make($driverName)->startAuthentication();
                 } catch (AuthenticationFailedToStartException $e) {
                     $enabledDrivers[$driverName]['started'] = false;
-                    $enabledDrivers[$driverName]['exception'] = $e;
+                    $enabledDrivers[$driverName]['exception'] = $e->toArray();
                 }
             }
         }

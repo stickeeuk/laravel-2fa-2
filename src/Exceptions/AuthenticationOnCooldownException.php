@@ -25,4 +25,17 @@ class AuthenticationOnCooldownException extends AuthenticationFailedToStartExcep
         $this->availableAt = $availableAt;
         parent::__construct($message, $code, $previous);
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function toArray()
+    {
+        return array_merge(
+            parent::toArray(),
+            [
+                'available_at' => $this->availableAt,
+            ]
+        );
+    }
 }
